@@ -72,7 +72,7 @@ class PostStats(
     var username: String,
 
     // post-required info
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     var postId: Long,
 
     @Column(nullable = false)

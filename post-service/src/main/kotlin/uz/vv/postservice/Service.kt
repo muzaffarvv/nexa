@@ -40,16 +40,21 @@ class PostServiceImpl(
         dto.parentId?.let { parentId ->
             postRepo.findByIdAndDeletedFalse(parentId)
                 ?: throw ParentPostNotFoundException("Parent post not found with id: $parentId")
-            updateHasSubPosts(parentId)
+
+            postStatsRepo.findByPostIdAndDeletedFalse(parentId).apply {
+                hasSubPosts = true
+                commentCount++
+                postStatsRepo.save(this)
+            }
         }
 
         val user = fetchUser(dto.userId)
-
         val post = savePostEntity(dto)
         savePostStats(post, user)
 
         return toResponse(post)
     }
+
 
     private fun savePostEntity(dto: PostCreateDto): Post {
         val post = Post(
@@ -136,8 +141,7 @@ class PostServiceImpl(
             throw ServiceUnavailableException(ErrorCodes.REACTION_SERVICE_UNAVAILABLE, e.message ?: "Reaction error")
         }
 
-        val stats = postStatsRepo.findByPostId(postId)
-            ?: throw InternalServerException("Stats missing")
+        val stats = postStatsRepo.findByPostIdAndDeletedFalse(postId)
 
         stats.likeCount =
             if (liked) stats.likeCount + 1 else maxOf(0, stats.likeCount - 1)
@@ -149,30 +153,28 @@ class PostServiceImpl(
 
 
     override fun getPostStats(postId: Long): PostStatsResponseDto {
-        val stats = postStatsRepo.findByPostId(postId)
-            ?: throw PostNotFoundException()
+        val stats = postStatsRepo.findByPostIdAndDeletedFalse(postId)
 
         return PostStatsResponseDto(
             postId = postId,
             likeCount = stats.likeCount,
             commentCount = stats.commentCount,
-            replyCount = if (stats.hasSubPosts) stats.commentCount else 0
+            replyCount = stats.commentCount
         )
     }
 
     override fun postCountByUserId(userId: Long) = postRepo.countByUserIdAndDeletedFalse(userId)
 
     private fun toResponse(post: Post): PostResponseDto {
-        val stats = postStatsRepo.findByPostId(post.id!!)
-            ?: return postMapper.toDto(post)
+        val stats = postStatsRepo.findByPostIdAndDeletedFalse(post.id!!)
 
         return PostResponseDto(
             id = post.id!!,
             userId = post.userId,
             username = stats.username,
             parentId = post.parentId,
-            content = post.content,
-            mediaUrl = post.mediaUrl,
+            content = stats.content,
+            mediaUrl = stats.mediaUrl,
             createdAt = post.createdAt,
             hasSubPosts = stats.hasSubPosts,
             commentCount = stats.commentCount,

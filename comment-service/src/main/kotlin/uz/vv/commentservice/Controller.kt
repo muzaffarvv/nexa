@@ -1,6 +1,7 @@
 package uz.vv.commentservice
 
 import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.*
@@ -39,7 +40,7 @@ class CommentController(private val commentService: CommentService) {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(org.springframework.http.HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     fun delete(
         @PathVariable id: Long,
         @RequestHeader("X-User-Id") currentUserId: Long

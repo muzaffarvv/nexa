@@ -57,42 +57,52 @@ class BaseRepoImpl<T : BaseEntity>(
 @Repository
 interface PostRepo : BaseRepo<Post> {
 
-    @Query("""
+    @Query(
+        """
         SELECT COUNT(p) FROM Post p 
         WHERE p.userId = :userId 
         AND p.deleted = false
-    """)
+    """
+    )
     fun countByUserIdAndDeletedFalse(@Param("userId") userId: Long): Int
 
-    @Query("""
+    @Query(
+        """
         SELECT p FROM Post p 
         WHERE p.userId = :userId 
         AND p.deleted = false 
         ORDER BY p.createdAt DESC
-    """)
+    """
+    )
     fun findByUserIdAndDeletedFalse(userId: Long, pageable: Pageable): Page<Post>
 
-    @Query("""
+    @Query(
+        """
         SELECT p FROM Post p 
         WHERE p.parentId = :parentId 
         AND p.deleted = false 
         ORDER BY p.createdAt DESC
-    """)
+    """
+    )
     fun findByParentIdAndDeletedFalse(parentId: Long, pageable: Pageable): Page<Post>
 
-    @Query("""
+    @Query(
+        """
         SELECT COUNT(p) > 0 FROM Post p 
         WHERE p.parentId = :postId 
         AND p.deleted = false
-    """)
+    """
+    )
     fun hasReplies(postId: Long): Boolean
 
-    @Query("""
+    @Query(
+        """
         SELECT p FROM Post p 
         WHERE p.deleted = false 
         AND p.archived = false 
         ORDER BY p.createdAt DESC
-    """)
+    """
+    )
     fun findActivePostsNotDeleted(pageable: Pageable): Page<Post>
 
     @Query(
@@ -111,15 +121,19 @@ interface PostRepo : BaseRepo<Post> {
 @Repository
 interface PostStatsRepo : BaseRepo<PostStats> {
 
+    fun findByPostIdAndDeletedFalse(id: Long): PostStats
+
     fun findByPostId(postId: Long): PostStats?
 
     fun findByPostIdIn(postIds: List<Long>): List<PostStats>
 
-    @Query("""
+    @Query(
+        """
         SELECT ps FROM PostStats ps 
         WHERE ps.userId = :userId 
         AND ps.deleted = false 
         ORDER BY ps.createdAt DESC
-    """)
+    """
+    )
     fun findByUserIdAndDeletedFalse(userId: Long, pageable: Pageable): Page<PostStats>
 }
