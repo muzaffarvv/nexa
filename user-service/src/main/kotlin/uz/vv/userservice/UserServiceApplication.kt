@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @SpringBootApplication
-@EnableJpaAuditing
 @EnableJpaRepositories(
 	basePackages = ["uz.vv.userservice"],
 	repositoryBaseClass = BaseRepoImpl::class
