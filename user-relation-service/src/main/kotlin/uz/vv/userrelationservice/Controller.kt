@@ -6,7 +6,7 @@ import org.springframework.data.web.PageableDefault
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/v1/relations")
+@RequestMapping("/api/v1/user-relations")
 class UserRelationController(
     private val userRelationService: UserRelationService
 ) {
