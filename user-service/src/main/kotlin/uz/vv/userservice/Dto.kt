@@ -42,7 +42,7 @@ data class UserCreateDto(
     @field:Pattern(
         regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%!?&]).*$",
         message = "Password must contain uppercase, lowercase, digit and special character"
-    )    val password: String? = null, // create da kerak, update da optional
+    )    val password: String, // create da kerak, update da optional
 
     @field:NotBlank
     val confirmPassword: String? = null

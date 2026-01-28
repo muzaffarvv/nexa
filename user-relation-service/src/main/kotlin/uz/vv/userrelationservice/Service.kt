@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-
 interface UserRelationService {
 
     // Follow actions
@@ -44,40 +43,80 @@ class UserRelationServiceImpl(
 
     @Transactional
     override fun followUser(currentUserId: Long, targetUserId: Long): String {
-        if (currentUserId == targetUserId)
-            throw SelfActionNotAllowedException("You can't follow yourself")
+        validateSelfFollow(currentUserId, targetUserId)
 
-
-        // 1. Block tekshirish (ikki tomonlama)
         checkBlockRelationship(currentUserId, targetUserId)
 
-        // 2. Allaqachon follow bo'lganmi?
-        if (followRepository.existsByFollowerIdAndFollowingIdAndDeletedFalse(currentUserId, targetUserId)) {
+        handleExistingFollow(currentUserId, targetUserId)?.let {
+            return it
+        }
+
+        val targetUser = getTargetUserOrThrow(targetUserId)
+
+        validateNoPendingRequest(currentUserId, targetUserId)
+
+        return processFollowLogic(currentUserId, targetUserId, targetUser.isPrivate)
+    }
+
+    private fun validateSelfFollow(currentUserId: Long, targetUserId: Long) {
+        if (currentUserId == targetUserId) {
+            throw SelfActionNotAllowedException("You can't follow yourself")
+        }
+    }
+
+    private fun handleExistingFollow(
+        currentUserId: Long,
+        targetUserId: Long
+    ): String? {
+        val follow = followRepository.findByFollowerIdAndFollowingId(currentUserId, targetUserId)
+            ?: return null
+
+        if (!follow.deleted) {
             throw AlreadyFollowingException("Already following")
         }
 
+        follow.deleted = false
+        followRepository.save(follow)
+        updateBothUserStats(currentUserId, targetUserId)
+        return "Following"
+    }
 
-        // 3. User ma'lumotlarini olish (User Service orqali)
-        val targetUserDto = try {
+    private fun getTargetUserOrThrow(targetUserId: Long): UserResponseDto {
+        return try {
             userFeignClient.getUserById(targetUserId)
-        } catch (e: Exception) {
+        } catch (ex: Exception) {
             throw UserNotFoundException()
         }
+    }
 
-        // 4. Pending request borligini tekshirish
-        if (followRequestRepository.existsByRequesterIdAndTargetIdAndDeletedFalse(currentUserId, targetUserId)) {
+    private fun validateNoPendingRequest(currentUserId: Long, targetUserId: Long) {
+        if (followRequestRepository
+                .existsByRequesterIdAndTargetIdAndDeletedFalse(currentUserId, targetUserId)
+        ) {
             throw FollowRequestExistsException("Request already sent")
         }
+    }
 
-        // 5. Logic: Private vs Public
-        if (targetUserDto.isPrivate) {
+    private fun processFollowLogic(
+        currentUserId: Long,
+        targetUserId: Long,
+        isPrivate: Boolean
+    ): String {
+        return if (isPrivate) {
             createFollowRequest(currentUserId, targetUserId)
-            return "Requested"
+            "Requested"
         } else {
             createFollow(currentUserId, targetUserId)
-            return "Following"
+            "Following"
         }
     }
+
+    private fun updateBothUserStats(userId1: Long, userId2: Long) {
+        updateUserStats(userId1)
+        updateUserStats(userId2)
+    }
+
+
 
     @Transactional
     override fun unfollowUser(currentUserId: Long, targetUserId: Long) {
@@ -88,7 +127,6 @@ class UserRelationServiceImpl(
         follow.deleted = true
         followRepository.save(follow)
 
-        // Statistikani yangilash
         updateUserStats(currentUserId)
         updateUserStats(targetUserId)
     }
@@ -99,11 +137,9 @@ class UserRelationServiceImpl(
             ?: throw FollowRelationNotFoundException("Request not found")
 
 
-        // Requestni o'chirish (soft delete)
         request.deleted = true
         followRequestRepository.save(request)
 
-        // Follow yaratish
         createFollow(requesterId, currentUserId)
     }
 
@@ -128,7 +164,6 @@ class UserRelationServiceImpl(
             return
         }
 
-        // Agar ular o'rtasida follow bo'lsa, uni o'chiramiz
         unfollowIfExists(currentUserId, targetUserId)
         unfollowIfExists(targetUserId, currentUserId)
 
@@ -171,7 +206,6 @@ class UserRelationServiceImpl(
 
     @Transactional
     override fun getUserProfile(currentUserId: Long, targetUserId: Long): UserProfileDto {
-        // 1. Block tekshirish
         val isBlockedByMe = userBlockRepository.existsByBlockerIdAndBlockedIdAndDeletedFalse(currentUserId, targetUserId)
         val isBlockedByTarget = userBlockRepository.existsByBlockerIdAndBlockedIdAndDeletedFalse(targetUserId, currentUserId)
 
@@ -179,23 +213,16 @@ class UserRelationServiceImpl(
             throw UserNotFoundException() // Bloklagan odamga user ko'rinmaydi
         }
 
-        // 2. Stats olish (yoki yaratish)
         val stats = userStatsRepository.findByUserIdAndDeletedFalse(targetUserId)
             ?: syncUserStatsFromFeign(targetUserId)
 
-        // 3. Postlar soni (Post Service)
         val postsCount = try {
             postFeignClient.getUserPostsCount(targetUserId)
         } catch (e: Exception) {
             0L
         }
 
-        // 4. Munosabat
         val isFollowing = followRepository.existsByFollowerIdAndFollowingIdAndDeletedFalse(currentUserId, targetUserId)
-
-        // 5. Private profil logikasi
-        // Agar user private bo'lsa VA men follow qilmagan bo'lsam VA bu men o'zim bo'lmasam -> Postlar 0 ko'rinishi kerak (yoki null)
-        // Mapper funksiyasi bizga tayyor DTO qaytaradi.
 
         return mapper.run {
             stats.toProfileDto(

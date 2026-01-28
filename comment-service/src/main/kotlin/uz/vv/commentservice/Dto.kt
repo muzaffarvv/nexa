@@ -1,5 +1,7 @@
 package uz.vv.commentservice
 
+import java.time.Instant
+
 data class CommentCreateDto(
     val postId: Long,
     val userId: Long,
@@ -13,7 +15,7 @@ data class CommentResponseDto(
     val postId: Long,
     val parentId: Long?,
     val content: String,
-    val createdAt: java.time.Instant?,
+    val createdAt: Instant?,
     val hasReplies: Boolean = false,
     val likeCount: Long = 0
 )

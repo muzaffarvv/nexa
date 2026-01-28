@@ -10,11 +10,11 @@ data class PostCreateDto(
 
     val parentId: Long? = null, // Agar repost yoki thread bo'lsa
 
-    @field:NotBlank(message = "Content bo'sh bo'lishi mumkin emas")
-    @field:Size(max = 5000, message = "Post mazmuni juda uzun")
+    @field:NotBlank(message = "Content can't be empty")
+    @field:Size(max = 750, message = "Post content is too long")
     val content: String,
 
-    val mediaUrl: String? = null // Media-service'dan olingan URL
+    val mediaUrl: String? = null
 )
 
 data class PostUpdateDto(
@@ -22,6 +22,7 @@ data class PostUpdateDto(
     val content: String,
     val mediaUrl: String? = null
 )
+
 data class PostResponseDto(
     val id: Long,
     val userId: Long,

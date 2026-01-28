@@ -51,7 +51,6 @@ class CommentService(
 
         if (commentIds.isEmpty()) return commentsPage.map { mapToDto(it, createDefaultStats(it)) }
 
-        // N+1 muammosini oldini olish uchun batch fetch
         val statsMap = statsRepo.findByCommentIdIn(commentIds).associateBy { it.commentId }
 
         return commentsPage.map { comment ->
@@ -113,7 +112,6 @@ class CommentService(
     }
 
     private fun fetchUserInfo(userId: Long) = userFeignClient.getUserById(userId)
-        ?: throw ValidationException(ErrorCodes.VALIDATION_EXCEPTION, "User not found")
 
     private fun validateParentComment(parentId: Long?, postId: Long) {
         if (parentId == null) return
@@ -127,9 +125,21 @@ class CommentService(
         )
     }
 
-    private fun createDefaultStats(c: Comment) = CommentStats(c.userId, "Unknown", c.postId, c.id!!, c.content)
+    private fun createDefaultStats(c: Comment) = CommentStats(
+        c.userId,
+        "Unknown",
+        c.postId,
+        c.id!!,
+        c.content)
 
     private fun mapToDto(c: Comment, s: CommentStats) = CommentResponseDto(
-        c.id!!, c.userId, c.postId, c.parentId, c.content, c.createdAt, s.hasReplies, s.likeCount
+        c.id!!,
+        c.userId,
+        c.postId,
+        c.parentId,
+        c.content,
+        c.createdAt,
+        s.hasReplies,
+        s.likeCount
     )
 }

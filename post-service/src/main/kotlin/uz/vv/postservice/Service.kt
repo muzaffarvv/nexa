@@ -55,7 +55,6 @@ class PostServiceImpl(
         return toResponse(post)
     }
 
-
     private fun savePostEntity(dto: PostCreateDto): Post {
         val post = Post(
             userId = dto.userId,
@@ -76,9 +75,6 @@ class PostServiceImpl(
         )
         postStatsRepo.save(stats)
     }
-
-
-
 
     @Transactional(readOnly = true)
     override fun getById(id: Long): PostResponseDto {
@@ -119,7 +115,6 @@ class PostServiceImpl(
         return toResponse(post)
     }
 
-
     @Transactional
     override fun delete(id: Long, currentUserId: Long) {
         val post = getOwnedPost(id, currentUserId)
@@ -129,7 +124,6 @@ class PostServiceImpl(
             postStatsRepo.save(it)
         }
     }
-
 
     @Transactional
     override fun toggleLike(postId: Long, userId: Long): LikeResponseDto {

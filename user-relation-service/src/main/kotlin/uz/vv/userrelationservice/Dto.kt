@@ -19,6 +19,11 @@ data class UserProfileDto(
     val isBlocked: Boolean
 )
 
+data class UserDto(
+    val id: Long,
+    val isPrivate: Boolean
+)
+
 data class FollowDto(
     val followerId: Long,
     val followingId: Long,

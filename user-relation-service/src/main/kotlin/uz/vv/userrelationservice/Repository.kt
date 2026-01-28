@@ -16,6 +16,8 @@ interface UserRefRepository : JpaRepository<UserRef, Long> {
 @Repository
 interface FollowRepository : JpaRepository<Follow, Long> {
 
+    fun findByFollowerIdAndFollowingId(currentId: Long, targetId: Long) : Follow?
+
     // Ikki foydalanuvchi o'rtasidagi aloqani tekshirish
     fun findByFollowerIdAndFollowingIdAndDeletedFalse(followerId: Long, followingId: Long): Follow?
 

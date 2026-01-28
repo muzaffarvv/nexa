@@ -18,6 +18,18 @@ data class UserResponseDto(
     val username: String
 )
 
+//interface PostFeignClient {
+//    @GetMapping("/{id}")
+//    fun getById(@PathVariable("id") id: Long): PostResponseDto
+//}
+//
+//data class PostResponseDto(
+//    val id: Long,
+//    val content: String,
+//    val mediaUrl: String?,
+//    val likeCount: Long = 0,
+//)
+
 @FeignClient(name = "reaction-service", path = "/api/v1/reactions")
 interface ReactionFeignClient {
 
