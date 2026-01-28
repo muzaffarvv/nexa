@@ -1,0 +1,1 @@
+package uz.vv.mediaservice

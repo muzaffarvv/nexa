@@ -22,7 +22,7 @@ class BaseRepoTests {
         // Create and save a user
         val user = User(
             username = "testuser",
-            profileImageUrl = "default.png",
+            mediaKey = "default.png",
             isPrivate = false
         )
         val saved = userRepo.save(user)
@@ -46,7 +46,7 @@ class BaseRepoTests {
         // Create and save a user
         val user = User(
             username = "testuser2",
-            profileImageUrl = "default.png",
+            mediaKey = "default.png",
             isPrivate = false
         )
         val saved = userRepo.save(user)

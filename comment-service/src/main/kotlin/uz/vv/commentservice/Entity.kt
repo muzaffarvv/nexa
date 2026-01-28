@@ -75,8 +75,8 @@ class CommentStats(
     @Column()
     var content: String,
 
-    @Column
-    var mediaUrl: String? = null,
+    @Column(name = "media_key")
+    var mediaKey: String? = null,
 
     @Column(nullable = false)
     var hasReplies: Boolean = false,

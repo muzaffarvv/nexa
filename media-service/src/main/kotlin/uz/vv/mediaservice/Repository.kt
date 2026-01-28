@@ -9,4 +9,6 @@ interface MediaRepo : JpaRepository<MediaFile, Long> {
         ownerType: MediaOwnerType,
         ownerId: Long
     ): List<MediaFile>
+
+    fun findByKeyName(keyName: String): MediaFile?
 }

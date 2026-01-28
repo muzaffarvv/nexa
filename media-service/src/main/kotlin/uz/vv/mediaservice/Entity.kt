@@ -56,11 +56,11 @@ class MediaFile(
     @Column(nullable = false, length = 20)
     val type: MediaType,
 
-    @Column(name = "original_name", nullable = false)
-    val originalName: String,
+    @Column(name = "org_name", nullable = false)
+    val orgName: String,
 
-    @Column(name = "storage_key", nullable = false, unique = true)
-    val storageKey: String,
+    @Column(name = "key_name", nullable = false, unique = true)
+    val keyName: String,
 
     @Column(nullable = false)
     val url: String,

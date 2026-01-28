@@ -56,3 +56,5 @@ interface CommentFeignClient {
     @GetMapping("/count/post/{postId}")
     fun getCommentCount(@PathVariable("postId") postId: Long): Long
 }
+
+// feign media

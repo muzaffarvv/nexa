@@ -8,7 +8,7 @@ data class UserProfileDto(
     val username: String,
     val fullName: String,
     val bio: String?,
-    val profileImageUrl: String?,
+    val mediaKey: String?,
     val isPrivate: Boolean,
 
     val postsCount: Long,

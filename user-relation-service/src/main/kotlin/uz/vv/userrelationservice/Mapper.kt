@@ -14,7 +14,7 @@ class Mapper {
         username = this.username,
         fullName = this.fullName,
         bio = this.bio,
-        profileImageUrl = this.profileImageUrl,
+        mediaKey = this.mediaKey,
         isPrivate = this.isPrivate,
         postsCount = postsCount,
         followersCount = this.followersCount,

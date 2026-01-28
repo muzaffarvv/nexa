@@ -47,8 +47,8 @@ class User(
     @Column(length = 150)
     var bio: String? = null,
 
-    @Column(nullable = false, length = 255)
-    var profileImageUrl: String = "default.png",
+    @Column(length = 32, unique = true)
+    var mediaKey: String? = null,
 
     @Min(13)
     @Column(nullable = true)

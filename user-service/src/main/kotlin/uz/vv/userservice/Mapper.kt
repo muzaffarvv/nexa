@@ -16,7 +16,7 @@ class UserMapper : BaseMapper<User, UserResponseDto> {
             username = entity.username,
             phoneNumber = entity.phoneNumber,
             bio = entity.bio,
-            profileImageUrl = entity.profileImageUrl,
+            mediaKey = entity.mediaKey ?: "",
             age = entity.age,
             isPrivate = entity.isPrivate
         )

@@ -30,7 +30,7 @@ data class UserCreateDto(
     @field:Size(max = 150)
     val bio: String? = null,
 
-    val profileImageUrl: String? = null,
+    val mediaKey: String? = null,
 
     @field:Min(13, message = "You must be at least 13 years old to register")
     val age: Int? = null,
@@ -56,7 +56,7 @@ data class UserInfoUpdateDTO(
     @field:Size(max = 150)
     val bio: String? = null,
 
-    val profileImageUrl: String? = null,
+    val mediaKey: String? = null,
 
     @field:Min(13)
     val age: Int? = null,
@@ -98,7 +98,7 @@ data class UserResponseDto(
     val username: String,
     val phoneNumber: String?,
     val bio: String?,
-    val profileImageUrl: String,
+    val mediaKey: String,
     val age: Int?,
     val isPrivate: Boolean
 )

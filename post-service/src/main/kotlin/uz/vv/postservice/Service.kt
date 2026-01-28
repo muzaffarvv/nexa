@@ -61,7 +61,7 @@ class PostServiceImpl(
             userId = dto.userId,
             parentId = dto.parentId,
             content = dto.content,
-            mediaUrl = dto.mediaUrl
+            mediaKey = dto.mediaUrl
         )
         return postRepo.saveAndRefresh(post)
     }
@@ -72,7 +72,7 @@ class PostServiceImpl(
             userId = post.userId,
             username = user.username,
             content = post.content,
-            mediaUrl = post.mediaUrl
+            mediaKey = post.mediaKey
         )
         postStatsRepo.save(stats)
     }
@@ -104,12 +104,12 @@ class PostServiceImpl(
         val post = getOwnedPost(id, currentUserId)
 
         post.content = dto.content
-        post.mediaUrl = dto.mediaUrl
+        post.mediaKey = dto.mediaUrl
         postRepo.save(post)
 
         postStatsRepo.findByPostId(id)?.apply {
             content = dto.content
-            mediaUrl = dto.mediaUrl
+            mediaKey = dto.mediaUrl
             postStatsRepo.save(this)
         }
 
@@ -170,7 +170,7 @@ class PostServiceImpl(
             username = stats.username,
             parentId = post.parentId,
             content = stats.content,
-            mediaUrl = stats.mediaUrl,
+            mediaUrl = stats.mediaKey,
             createdAt = post.createdAt,
             hasSubPosts = stats.hasSubPosts,
             commentCount = commentCount,

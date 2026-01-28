@@ -93,10 +93,7 @@ class UserService(
 
     override fun toEntity(dto: UserCreateDto): User {
         checkUsername(dto.username)
-        val validatedPassword = dto.password ?: throw ValidationException(
-            ErrorCodes.VALIDATION_EXCEPTION,
-            "Password is required"
-        )
+        val validatedPassword = dto.password
         validatePassword(validatedPassword, dto.confirmPassword)
 
         val user = repository.save(buildUser(dto))
@@ -120,7 +117,7 @@ class UserService(
             username = dto.username,
             phoneNumber = dto.phoneNumber,
             bio = dto.bio,
-            profileImageUrl = dto.profileImageUrl ?: "default.png",
+            mediaKey = dto.mediaKey ?: "default.png",
             age = dto.age,
             isPrivate = dto.isPrivate
         )
@@ -158,7 +155,7 @@ class UserService(
     override fun updateEntity(dto: UserInfoUpdateDTO, entity: User): User {
         dto.fullName?.let { entity.fullName = it }
         dto.bio?.let { entity.bio = it }
-        dto.profileImageUrl?.let { entity.profileImageUrl = it }
+        dto.mediaKey?.let { entity.mediaKey = it }
         dto.age?.let { entity.age = it }
         return entity
     }
@@ -190,16 +187,16 @@ class UserService(
     @Transactional(readOnly = true)
     override fun getById(id: Long): UserResponseDto {
         val user = getUserById(id)
-        val profileImageUrl = fetchProfileImageUrl(user.id!!, user.profileImageUrl)
-        user.profileImageUrl = profileImageUrl
+        val profileImageUrl = fetchProfileImageUrl(user.id!!, user.mediaKey ?: "")
+        user.mediaKey = profileImageUrl
         return mapper.toDto(user)
     }
 
     @Transactional(readOnly = true)
     override fun getAll(pageable: Pageable): Page<UserResponseDto> {
         return repository.findAllNotDeleted(pageable).map { user ->
-            val profileImageUrl = fetchProfileImageUrl(user.id!!, user.profileImageUrl)
-            user.profileImageUrl = profileImageUrl
+            val profileImageUrl = fetchProfileImageUrl(user.id!!, user.mediaKey ?: "")
+            user.mediaKey = profileImageUrl
             mapper.toDto(user)
         }
     }
@@ -207,8 +204,8 @@ class UserService(
     @Transactional(readOnly = true)
     override fun getAllList(): List<UserResponseDto> {
         return repository.findAllNotDeleted().map { user ->
-            val profileImageUrl = fetchProfileImageUrl(user.id!!, user.profileImageUrl)
-            user.profileImageUrl = profileImageUrl
+            val profileImageUrl = fetchProfileImageUrl(user.id!!, user.mediaKey ?: "")
+            user.mediaKey = profileImageUrl
             mapper.toDto(user)
         }
     }

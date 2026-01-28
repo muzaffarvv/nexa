@@ -70,7 +70,7 @@ class Follow : BaseEntity() {
 ])
 class UserStats(
 
-    @Column(name = "user_id", unique = true, nullable = false) // @Id emas, shunchaki Unique Column
+    @Column(name = "user_id", unique = true, nullable = false)
     var userId: Long? = null,
 
     // Profil ma'lumotlari
@@ -83,8 +83,8 @@ class UserStats(
     @Column(length = 150)
     var bio: String? = null,
 
-    @Column(name = "profile_image_url")
-    var profileImageUrl: String? = null,
+    @Column(name = "media_key", unique = true)
+    var mediaKey: String? = null,
 
     @Column(name = "is_private", nullable = false)
     var isPrivate: Boolean = false,

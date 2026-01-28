@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
-import java.util.*
+import java.security.SecureRandom
 
 @Service
 class MediaService(
@@ -29,25 +29,25 @@ class MediaService(
 
         try {
             val originalName = file.originalFilename ?: "unnamed"
-            val shortId = UUID.randomUUID().toString().replace("-", "").take(12)
-            val storageKey = "${shortId}_$originalName"
 
-            // Create folder hierarchy (by ownerType/ownerId)
+            val storageKey = generateFileKey("key", ownerId)
+
+            val extension = originalName.substringAfterLast('.', "")
+            val storageKeyWithExt = if (extension.isNotEmpty()) "$storageKey.$extension" else storageKey
+
             val relativePath = Paths.get(ownerType.name.lowercase(), ownerId.toString())
             val targetDir = Paths.get(System.getProperty("user.home"), uploadDir).resolve(relativePath)
             Files.createDirectories(targetDir)
 
-            // Save file
-            val targetPath = targetDir.resolve(storageKey)
+            val targetPath = targetDir.resolve(storageKeyWithExt)
             Files.copy(file.inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING)
 
-            // Save to database
             val mediaFile = MediaFile(
                 ownerType = ownerType,
                 ownerId = ownerId,
                 type = determineMediaType(file.contentType),
-                originalName = originalName,
-                storageKey = storageKey,
+                orgName = originalName,
+                keyName = storageKeyWithExt,
                 url = targetPath.toString(),
                 size = file.size
             )
@@ -58,17 +58,31 @@ class MediaService(
         }
     }
 
+    fun generateFileKey(prefix: String, ownerId: Long): String {
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+        val rnd = SecureRandom()
+        val randomPart = (1..8).map { chars[rnd.nextInt(chars.length)] }.joinToString("")
+        return "$prefix-$ownerId-$randomPart"
+    }
+
+    fun getByKeyName(keyName: String): MediaFile {
+        return mediaRepo.findByKeyName(keyName) ?: throw FileNotFoundException(
+            ErrorCodes.FILE_NOT_FOUND,
+            "File not found: $keyName"
+        )
+    }
+
     fun getByOwner(ownerType: MediaOwnerType, ownerId: Long): List<MediaFile> {
         return mediaRepo.findAllByOwnerTypeAndOwnerIdAndDeletedFalse(ownerType, ownerId)
     }
 
     @Transactional
     fun delete(id: Long) {
-        val media = mediaRepo.findById(id).orElseThrow { FileNotFoundException() }
+        val media = mediaRepo.findById(id)
+            .orElseThrow { FileNotFoundException(ErrorCodes.FILE_NOT_FOUND, "File not found: $id") }
         media.deleted = true
         mediaRepo.save(media)
 
-        // Delete file from disk (optional, soft delete is usually recommended)
         try {
             Files.deleteIfExists(Paths.get(media.url))
         } catch (e: Exception) {

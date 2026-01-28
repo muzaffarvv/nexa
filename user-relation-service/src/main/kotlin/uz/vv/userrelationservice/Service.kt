@@ -293,7 +293,7 @@ class UserRelationServiceImpl(
             fullName = userDto.fullName ?: "",
             username = userDto.username,
             bio = userDto.bio,
-            profileImageUrl = userDto.profileImageUrl,
+            mediaKey = userDto.mediaKey,
             isPrivate = userDto.isPrivate
         )
         return userStatsRepository.save(newStats)

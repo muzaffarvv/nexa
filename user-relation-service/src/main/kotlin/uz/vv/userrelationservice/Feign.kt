@@ -17,7 +17,7 @@ data class UserResponseDto(
     val username: String,
     val phoneNumber: String?,
     val bio: String?,
-    val profileImageUrl: String,
+    val mediaKey: String,
     val age: Int?,
     val isPrivate: Boolean
 )

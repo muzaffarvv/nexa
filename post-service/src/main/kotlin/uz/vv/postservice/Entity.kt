@@ -52,8 +52,8 @@ class Post(
     @Column(columnDefinition = "TEXT", nullable = false)
     var content: String,
 
-    @Column(name = "media_url")
-    var mediaUrl: String? = null,
+    @Column(name = "media_key")
+    var mediaKey: String? = null,
 
     @Column(nullable = false)
     var archived: Boolean = false //
@@ -80,7 +80,7 @@ class PostStats(
 
     // agar postga media biriktirilgan bo‘lsa
     @Column
-    var mediaUrl: String? = null,
+    var mediaKey: String? = null,
 
     // agar subposts mavjud bo‘lsa
     @Column(nullable = false)
@@ -95,4 +95,3 @@ class PostStats(
     var likeCount: Long = 0
 
 ) : BaseEntity()
-
