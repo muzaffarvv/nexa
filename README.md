@@ -8,9 +8,9 @@
   <!-- Main tech badges based on project internals -->
   <img src="https://img.shields.io/badge/Kotlin-purple?style=for-the-badge&logo=kotlin" alt="Kotlin">
   <img src="https://img.shields.io/badge/Spring Boot-brightgreen?style=for-the-badge&logo=spring" alt="Spring Boot">
-  <img src="https://img.shields.io/badge/JPA-orange?style=for-the-badge" alt="JPA">
   <img src="https://img.shields.io/badge/Microservices-blue?style=for-the-badge" alt="Microservices">
   <img src="https://img.shields.io/badge/PostgreSQL-lightblue?style=for-the-badge&logo=postgresql" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/JPA-orange?style=for-the-badge" alt="JPA">
   <br>
   <strong>A modular microservices project built in Kotlin with Spring Boot and PostgreSQL.</strong>
 </div>
