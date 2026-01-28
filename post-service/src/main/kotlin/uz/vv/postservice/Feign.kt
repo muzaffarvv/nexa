@@ -49,3 +49,10 @@ enum class ReactionTargetType {
     POST,
     COMMENT
 }
+
+@FeignClient(name = "comment-service", path = "/api/v1/comments")
+interface CommentFeignClient {
+
+    @GetMapping("/count/post/{postId}")
+    fun getCommentCount(@PathVariable("postId") postId: Long): Long
+}

@@ -58,6 +58,13 @@ interface CommentRepo : JpaRepository<Comment, Long> {
         AND c.deleted = false
     """)
     fun softDeleteReplies(@Param("parentId") parentId: Long): Int
+
+    @Query("""
+        SELECT COUNT(c) FROM Comment c
+        WHERE c.postId = :postId
+        AND c.deleted = false
+    """)
+    fun countByPostId(@Param("postId") postId: Long): Long
 }
 
 @Repository

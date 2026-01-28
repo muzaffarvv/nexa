@@ -27,6 +27,7 @@ class PostServiceImpl(
     private val postStatsRepo: PostStatsRepo,
     private val userFeignClient: UserFeignClient,
     private val reactionFeignClient: ReactionFeignClient,
+    private val commentFeignClient: CommentFeignClient,
     private val postMapper: PostMapper
 ) : PostService {
 
@@ -161,6 +162,7 @@ class PostServiceImpl(
 
     private fun toResponse(post: Post): PostResponseDto {
         val stats = postStatsRepo.findByPostIdAndDeletedFalse(post.id!!)
+        val commentCount = fetchCommentCount(post.id!!)
 
         return PostResponseDto(
             id = post.id!!,
@@ -171,7 +173,7 @@ class PostServiceImpl(
             mediaUrl = stats.mediaUrl,
             createdAt = post.createdAt,
             hasSubPosts = stats.hasSubPosts,
-            commentCount = stats.commentCount,
+            commentCount = commentCount,
             likeCount = stats.likeCount,
             archived = post.archived
         )
@@ -201,5 +203,12 @@ class PostServiceImpl(
             userFeignClient.getUserById(userId)
         } catch (e: FeignException) {
             throw ServiceUnavailableException(ErrorCodes.USER_SERVICE_UNAVAILABLE, e.message ?: "User service error")
+        }
+
+    private fun fetchCommentCount(postId: Long): Long =
+        try {
+            commentFeignClient.getCommentCount(postId)
+        } catch (e: FeignException) {
+            0L
         }
 }

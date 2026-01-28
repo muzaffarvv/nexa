@@ -47,4 +47,9 @@ class CommentController(private val commentService: CommentService) {
     ) {
         commentService.delete(id, currentUserId)
     }
+
+    @GetMapping("/count/post/{postId}")
+    fun getCommentCount(@PathVariable postId: Long): Long {
+        return commentService.getCommentCount(postId)
+    }
 }

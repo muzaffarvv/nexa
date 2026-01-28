@@ -111,6 +111,9 @@ class CommentService(
         commentRepo.softDeleteReplies(commentId)
     }
 
+    @Transactional(readOnly = true)
+    fun getCommentCount(postId: Long): Long = commentRepo.countByPostId(postId)
+
     private fun fetchUserInfo(userId: Long) = userFeignClient.getUserById(userId)
 
     private fun validateParentComment(parentId: Long?, postId: Long) {
