@@ -52,4 +52,9 @@ class CommentController(private val commentService: CommentService) {
     fun getCommentCount(@PathVariable postId: Long): Long {
         return commentService.getCommentCount(postId)
     }
+
+    @PostMapping("/internal/media/link")
+    fun linkMedia(@RequestBody request: MediaLinkRequest) {
+        commentService.attachMedia(request.ownerId, request.mediaKey)
+    }
 }

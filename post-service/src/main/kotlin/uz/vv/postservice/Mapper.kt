@@ -17,7 +17,7 @@ class PostMapper : BaseMapper<Post, PostResponseDto> {
             username = "Unknown", // Service layer will enrich this
             parentId = entity.parentId,
             content = entity.content,
-            mediaUrl = entity.mediaUrl,
+            mediaUrl = entity.mediaKey,
             createdAt = entity.createdAt,
             hasSubPosts = false, // Service layer will enrich this
             commentCount = 0, // Service layer will enrich this

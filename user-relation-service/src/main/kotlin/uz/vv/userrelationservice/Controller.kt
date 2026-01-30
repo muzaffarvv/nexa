@@ -103,4 +103,10 @@ class UserRelationController(
     ): UserProfileDto {
         return userRelationService.getUserProfile(currentUserId, targetUserId)
     }
+
+    @PostMapping("/internal/media/attach")
+    fun attachMedia(@RequestBody request: MediaLinkRequest) {
+        userRelationService.attachMedia(request.ownerId, request.mediaKey)
+    }
+
 }

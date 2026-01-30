@@ -51,3 +51,8 @@ data class PostStatsResponseDto(
     val replyCount: Long,
     val viewCount: Long = 0
 )
+
+data class MediaLinkRequest(
+    val mediaKey: String,
+    val ownerId: Long
+)

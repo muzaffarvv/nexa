@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import feign.FeignException
 
-
 interface PostService {
 
     fun create(dto: PostCreateDto, currentUserId: Long): PostResponseDto
@@ -19,6 +18,7 @@ interface PostService {
     fun toggleLike(postId: Long, userId: Long): LikeResponseDto
     fun getPostStats(postId: Long): PostStatsResponseDto
     fun postCountByUserId(userId: Long): Int
+    fun updateMediaLink(ownerId: Long, mediaKey: String)
 }
 
 @Service
@@ -28,7 +28,6 @@ class PostServiceImpl(
     private val userFeignClient: UserFeignClient,
     private val reactionFeignClient: ReactionFeignClient,
     private val commentFeignClient: CommentFeignClient,
-    private val postMapper: PostMapper
 ) : PostService {
 
     @Transactional
@@ -54,6 +53,20 @@ class PostServiceImpl(
         savePostStats(post, user)
 
         return toResponse(post)
+    }
+
+    @Transactional
+    override fun updateMediaLink(ownerId: Long, mediaKey: String) {
+        val post = postRepo.findByIdAndDeletedFalse(ownerId)
+            ?: throw PostNotFoundException("Post not found with id: $ownerId")
+
+        val postStats = postStatsRepo.findByPostIdAndDeletedFalse(ownerId)
+
+        post.mediaKey = mediaKey
+        postStats.mediaKey = mediaKey
+
+        postRepo.save(post)
+        postStatsRepo.save(postStats)
     }
 
     private fun savePostEntity(dto: PostCreateDto): Post {
@@ -145,7 +158,6 @@ class PostServiceImpl(
 
         return LikeResponseDto(liked, stats.likeCount)
     }
-
 
     override fun getPostStats(postId: Long): PostStatsResponseDto {
         val stats = postStatsRepo.findByPostIdAndDeletedFalse(postId)

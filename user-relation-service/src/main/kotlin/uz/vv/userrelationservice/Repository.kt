@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.repository.Modifying
 
 @Repository
 interface UserRefRepository : JpaRepository<UserRef, Long> {
@@ -38,6 +39,18 @@ interface FollowRepository : JpaRepository<Follow, Long> {
 interface UserStatsRepository : JpaRepository<UserStats, Long> {
 
     fun findByUserIdAndDeletedFalse(userId: Long): UserStats?
+
+    @Modifying
+    @Query("""
+        update UserStats us
+        set us.mediaKey = :mediaKey
+        where us.userId = :userId
+          and us.deleted = false
+    """)
+    fun updateMediaKeyByUserId(
+        @Param("userId") userId: Long,
+        @Param("mediaKey") mediaKey: String
+    ): Int
 
     fun findByUsernameAndDeletedFalse(username: String): UserStats?
 

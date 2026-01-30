@@ -29,7 +29,6 @@ class ValidationException(message: String? = null) :
 class InternalServerException(message: String? = null) :
     BaseException(ErrorCodes.INTERNAL_SERVER_ERROR, message)
 
-
 data class ErrorResponse(
     val code: Int,
     val message: String?,

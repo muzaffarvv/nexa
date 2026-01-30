@@ -114,6 +114,11 @@ class CommentService(
     @Transactional(readOnly = true)
     fun getCommentCount(postId: Long): Long = commentRepo.countByPostId(postId)
 
+    fun attachMedia(ownerId: Long, mediaKey: String) {
+        val updated = statsRepo.updateMediaKeyByCommentId(ownerId, mediaKey)
+        if (updated == 0) throw CommentNotFoundException( ErrorCodes.COMMENT_NOT_FOUND)
+    }
+
     private fun fetchUserInfo(userId: Long) = userFeignClient.getUserById(userId)
 
     private fun validateParentComment(parentId: Long?, postId: Long) {

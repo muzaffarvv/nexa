@@ -103,3 +103,8 @@ data class UserResponseDto(
     val isPrivate: Boolean
 )
 
+data class MediaLinkRequest(
+    val mediaKey: String,
+    val ownerId: Long
+)
+

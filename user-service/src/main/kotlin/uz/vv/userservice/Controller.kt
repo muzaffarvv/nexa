@@ -59,4 +59,9 @@ class UserController(
     fun delete(@PathVariable id: Long) {
         userService.delete(id)
     }
+
+    @PostMapping("/internal/media/link")
+    fun linkMedia(@RequestBody request: MediaLinkRequest) {
+        userService.attachMedia(request.ownerId, request.mediaKey)
+    }
 }

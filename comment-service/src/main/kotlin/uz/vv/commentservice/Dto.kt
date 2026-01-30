@@ -19,3 +19,8 @@ data class CommentResponseDto(
     val hasReplies: Boolean = false,
     val likeCount: Long = 0
 )
+
+data class MediaLinkRequest(
+    val mediaKey: String,
+    val ownerId: Long
+)

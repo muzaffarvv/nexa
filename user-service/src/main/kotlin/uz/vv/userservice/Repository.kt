@@ -6,10 +6,13 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import org.springframework.data.jpa.repository.Modifying
+import org.springframework.data.jpa.repository.Query
 import org.springframework.data.jpa.repository.support.JpaEntityInformation
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository
 import org.springframework.stereotype.Repository
 import org.springframework.data.repository.NoRepositoryBean
+import org.springframework.data.repository.query.Param
 import org.springframework.transaction.annotation.Transactional
 
 @NoRepositoryBean
@@ -56,6 +59,20 @@ class BaseRepoImpl<T : BaseEntity>(
 interface UserRepo : BaseRepo<User> {
     fun findByUsernameAndDeletedFalse(username: String): User?
     fun existsByUsernameAndDeletedFalse(username: String): Boolean
+
+    @Modifying
+    @Query("""
+        update User u
+        set u.mediaKey = :mediaKey,
+            u.updatedAt = CURRENT_TIMESTAMP
+        where u.id = :userId
+          and u.deleted = false
+          and u.status = 'ACTIVE'
+    """)
+    fun updateMediaKeyByUserId(
+        @Param("userId") userId: Long,
+        @Param("mediaKey") mediaKey: String
+    ): Int
 
 }
 

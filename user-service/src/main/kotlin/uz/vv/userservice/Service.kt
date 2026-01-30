@@ -117,7 +117,7 @@ class UserService(
             username = dto.username,
             phoneNumber = dto.phoneNumber,
             bio = dto.bio,
-            mediaKey = dto.mediaKey ?: "default.png",
+            mediaKey = dto.mediaKey,
             age = dto.age,
             isPrivate = dto.isPrivate
         )
@@ -149,8 +149,6 @@ class UserService(
             )
         }
     }
-
-
 
     override fun updateEntity(dto: UserInfoUpdateDTO, entity: User): User {
         dto.fullName?.let { entity.fullName = it }
@@ -210,13 +208,14 @@ class UserService(
         }
     }
 
+    fun attachMedia(ownerId: Long, mediaKey: String) {
+        val updated = repository.updateMediaKeyByUserId(ownerId, mediaKey)
+        if (updated == 0) throw UserNotFoundException( ErrorCodes.USER_NOT_FOUND)
+    }
+
     internal fun findByUsername(username: String): User? =
         repository.findByUsernameAndDeletedFalse(username)
 
-    /**
-     * Fetches profile image URL from media-service for the given user.
-     * Falls back to the user's stored profileImageUrl if media-service is unavailable or returns empty list.
-     */
     internal fun fetchProfileImageUrl(userId: Long, fallbackUrl: String): String {
         return try {
             val mediaFiles = mediaFeignClient.getMediaByOwner("USER", userId)

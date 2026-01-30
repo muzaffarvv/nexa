@@ -27,6 +27,8 @@ interface UserRelationService {
 
     // Profile & Stats
     fun getUserProfile(currentUserId: Long, targetUserId: Long): UserProfileDto
+
+    fun attachMedia(ownerId: Long, mediaKey: String)
 }
 
 @Service
@@ -116,8 +118,6 @@ class UserRelationServiceImpl(
         updateUserStats(userId2)
     }
 
-
-
     @Transactional
     override fun unfollowUser(currentUserId: Long, targetUserId: Long) {
         val follow = followRepository.findByFollowerIdAndFollowingIdAndDeletedFalse(currentUserId, targetUserId)
@@ -206,8 +206,10 @@ class UserRelationServiceImpl(
 
     @Transactional
     override fun getUserProfile(currentUserId: Long, targetUserId: Long): UserProfileDto {
-        val isBlockedByMe = userBlockRepository.existsByBlockerIdAndBlockedIdAndDeletedFalse(currentUserId, targetUserId)
-        val isBlockedByTarget = userBlockRepository.existsByBlockerIdAndBlockedIdAndDeletedFalse(targetUserId, currentUserId)
+        val isBlockedByMe =
+            userBlockRepository.existsByBlockerIdAndBlockedIdAndDeletedFalse(currentUserId, targetUserId)
+        val isBlockedByTarget =
+            userBlockRepository.existsByBlockerIdAndBlockedIdAndDeletedFalse(targetUserId, currentUserId)
 
         if (isBlockedByTarget) {
             throw UserNotFoundException() // Bloklagan odamga user ko'rinmaydi
@@ -231,6 +233,12 @@ class UserRelationServiceImpl(
                 isBlocked = isBlockedByMe
             )
         }
+    }
+
+    @Transactional
+    override fun attachMedia(ownerId: Long, mediaKey: String) {
+        val updated = userStatsRepository.updateMediaKeyByUserId(ownerId, mediaKey)
+        if (updated == 0) throw UserNotFoundException("UserStats not found with userId: $ownerId")
     }
 
     // --- Private Helpers ---

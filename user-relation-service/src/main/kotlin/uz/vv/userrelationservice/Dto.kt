@@ -43,3 +43,8 @@ data class FollowRequestDto(
     val status: String // ACTIVE, REJECTED,
 )
 
+data class MediaLinkRequest(
+    val mediaKey: String,
+    val ownerId: Long
+)
+

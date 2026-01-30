@@ -120,7 +120,6 @@ interface PostRepo : BaseRepo<Post> {
 
 @Repository
 interface PostStatsRepo : BaseRepo<PostStats> {
-
     fun findByPostIdAndDeletedFalse(id: Long): PostStats
 
     fun findByPostId(postId: Long): PostStats?

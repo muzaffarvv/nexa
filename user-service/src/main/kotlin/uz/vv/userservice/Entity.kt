@@ -47,7 +47,7 @@ class User(
     @Column(length = 150)
     var bio: String? = null,
 
-    @Column(length = 32, unique = true)
+    @Column(unique = true)
     var mediaKey: String? = null,
 
     @Min(13)

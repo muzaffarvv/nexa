@@ -70,6 +70,19 @@ interface CommentRepo : JpaRepository<Comment, Long> {
 @Repository
 interface CommentStatsRepo : JpaRepository<CommentStats, Long> {
 
+    @Modifying
+    @Query("""
+        update CommentStats cs
+        set cs.mediaKey = :mediaKey
+        where cs.commentId = :commentId
+          and cs.deleted = false
+          and cs.status = 'ACTIVE'
+    """)
+    fun updateMediaKeyByCommentId(
+        @Param("commentId") commentId: Long,
+        @Param("mediaKey") mediaKey: String
+    ): Int
+
     // ✅ Bitta stats olish
     fun findByCommentId(commentId: Long): CommentStats?
 

@@ -13,4 +13,5 @@ enum class ErrorCodes(val code: Int, val msg: String) {
     REACTION_SERVICE_UNAVAILABLE(401, "Reaction service unavailable"),
     INTERNAL_SERVER_ERROR(555, "Internal server error"),
     ACCESS_DENIED( 557, "Access denied"),
+    FILE_NOT_FOUND(558, "File not found"),
 }

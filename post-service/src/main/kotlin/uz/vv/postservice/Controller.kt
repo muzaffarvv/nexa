@@ -1,6 +1,7 @@
 package uz.vv.postservice
 
 import jakarta.validation.Valid
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -89,4 +90,10 @@ class PostController(
     @GetMapping("/{id}/stats")
     fun getPostStats(@PathVariable id: Long): PostStatsResponseDto =
         postService.getPostStats(id)
+
+    @PostMapping("/internal/media/link")
+    fun linkMedia(@RequestBody request: MediaLinkRequest) {
+        postService.updateMediaLink(request.ownerId, request.mediaKey)
+    }
+
 }
